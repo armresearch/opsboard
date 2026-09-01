@@ -1,0 +1,38 @@
+import subprocess
+from flask import Flask, request, send_file, session, jsonify
+import db
+
+app = Flask(__name__)
+app.secret_key = "dev"
+
+@app.route("/login", methods=["POST"])
+def login():
+    # Toy auth: any non-empty user logs in. Admin flag is NOT set here.
+    user = request.form.get("user", "")
+    if user:
+        session["user"] = user
+    return ("", 204)
+
+@app.route("/search")
+def search():
+    term = request.args.get("q", "")
+    rows = db.query("SELECT id, name FROM items WHERE name LIKE '%" + term + "%'")
+    return jsonify(rows)
+
+@app.route("/download")
+def download():
+    name = request.args.get("file", "")
+    return send_file("uploads/" + name)
+
+@app.route("/api/admin/users")
+def admin_users():
+    return jsonify(db.query("SELECT id, name, email FROM users"))
+
+@app.route("/ping")
+def ping():
+    host = request.args.get("host", "127.0.0.1")
+    out = subprocess.check_output("ping -c1 " + host, shell=True)
+    return out
+
+if __name__ == "__main__":
+    app.run()
