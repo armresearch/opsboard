@@ -16,7 +16,10 @@ def login():
 @app.route("/search")
 def search():
     term = request.args.get("q", "")
-    rows = db.query("SELECT id, name FROM items WHERE name LIKE '%" + term + "%'")
+    page = int(request.args.get("page", "1"))
+    off = (page - 1) * 20
+    rows = db.query("SELECT id, name FROM items WHERE name LIKE '%" + term + "%' "
+                    "LIMIT 20 OFFSET " + str(off))
     return jsonify(rows)
 
 @app.route("/download")
