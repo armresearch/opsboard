@@ -6,6 +6,12 @@ def connect():
 def query(sql):
     con = connect()
     try:
-        return con.execute(sql).fetchall()
+        cur = con.cursor()
+        cur.execute(sql)
+        return cur.fetchall()
     finally:
         con.close()
+
+def query_one(sql):
+    rows = query(sql)
+    return rows[0] if rows else None
