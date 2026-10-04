@@ -18,8 +18,8 @@ def search():
     term = request.args.get("q", "")
     page = int(request.args.get("page", "1"))
     off = (page - 1) * 20
-    rows = db.query("SELECT id, name FROM items WHERE name LIKE '%" + term + "%' "
-                    "LIMIT 20 OFFSET " + str(off))
+    rows = db.query("SELECT id, name FROM items WHERE name LIKE ? LIMIT 20 OFFSET ?",
+                    ("%" + term + "%", off))
     return jsonify(rows)
 
 @app.route("/download")

@@ -3,11 +3,11 @@ import sqlite3
 def connect():
     return sqlite3.connect("tool.db")
 
-def query(sql):
+def query(sql, params=()):
     con = connect()
     try:
         cur = con.cursor()
-        cur.execute(sql)
+        cur.execute(sql, params)
         return cur.fetchall()
     finally:
         con.close()
