@@ -24,8 +24,13 @@ def search():
 
 @app.route("/download")
 def download():
+    import os
     name = request.args.get("file", "")
-    return send_file("uploads/" + name)
+    base = os.path.realpath("uploads")
+    full = os.path.realpath(os.path.join(base, name))
+    if not full.startswith(base + os.sep):
+        return ("forbidden", 403)
+    return send_file(full)
 
 @app.route("/api/admin/users")
 def admin_users():
