@@ -1,4 +1,5 @@
-import csv, io
+import csv
+import io
 
 def to_csv(rows):
     buf = io.StringIO()
