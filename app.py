@@ -29,7 +29,7 @@ def download():
     base = os.path.realpath("uploads")
     full = os.path.realpath(os.path.join(base, name))
     if not full.startswith(base + os.sep):
-        return ("forbidden", 403)
+        return ("Unauthorized: path not allowed", 403)
     return send_file(full)
 
 @app.route("/api/admin/users")
