@@ -34,6 +34,8 @@ def download():
 
 @app.route("/api/admin/users")
 def admin_users():
+    if not session.get("is_admin"):
+        return ("forbidden", 403)
     return jsonify(db.query("SELECT id, name, email FROM users"))
 
 @app.route("/ping")
