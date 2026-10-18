@@ -5,6 +5,14 @@ import db
 app = Flask(__name__)
 app.secret_key = "dev"
 
+
+@app.route("/profile/avatar")
+def avatar():
+    url = session.get("avatar")
+    if url is None:
+        return ("", 204)
+    return {"avatar": url}
+
 @app.route("/login", methods=["POST"])
 def login():
     # Toy auth: any non-empty user logs in. Admin flag is NOT set here.
