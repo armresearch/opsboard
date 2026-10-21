@@ -49,7 +49,7 @@ def admin_users():
 @app.route("/ping")
 def ping():
     host = request.args.get("host", "127.0.0.1")
-    out = subprocess.check_output("ping -c1 " + host, shell=True)
+    out = subprocess.check_output(["ping", "-c1", host])
     return out
 
 if __name__ == "__main__":
