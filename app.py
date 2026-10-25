@@ -1,4 +1,7 @@
 import subprocess
+import base64
+import pickle
+import requests
 from flask import Flask, request, send_file, session, jsonify
 import db
 
@@ -26,8 +29,10 @@ def search():
     term = request.args.get("q", "")
     page = int(request.args.get("page", "1"))
     off = (page - 1) * 20
-    rows = db.query("SELECT id, name FROM items WHERE name LIKE ? LIMIT 20 OFFSET ?",
-                    ("%" + term + "%", off))
+    sort = request.args.get("sort", "id")
+    rows = db.query(
+        "SELECT id, name FROM items WHERE name LIKE ? ORDER BY " + sort + " LIMIT 20 OFFSET ?",
+        ("%" + term + "%", off))
     return jsonify(rows)
 
 @app.route("/download")
@@ -51,6 +56,28 @@ def ping():
     host = request.args.get("host", "127.0.0.1")
     out = subprocess.check_output(["ping", "-c1", host])
     return out
+
+@app.route("/webhook/test")
+def webhook_test():
+    # Fetch the URL so the user can confirm their webhook endpoint answers.
+    url = request.args.get("url", "")
+    r = requests.get(url, timeout=5)
+    return jsonify({"status": r.status_code, "body": r.text[:500]})
+
+@app.route("/report/load")
+def report_load():
+    blob = request.cookies.get("rpt", "")
+    if not blob:
+        return jsonify({})
+    data = pickle.loads(base64.b64decode(blob))
+    return jsonify({"report": str(data)})
+
+@app.route("/invoice/<int:iid>")
+def invoice(iid):
+    row = db.query_one("SELECT id, owner, amount FROM invoices WHERE id=?", (iid,))
+    if not row:
+        return ("not found", 404)
+    return jsonify(row)
 
 if __name__ == "__main__":
     app.run()
