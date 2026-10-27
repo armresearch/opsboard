@@ -59,8 +59,16 @@ def ping():
 
 @app.route("/webhook/test")
 def webhook_test():
-    # Fetch the URL so the user can confirm their webhook endpoint answers.
+    import socket, ipaddress
+    from urllib.parse import urlparse
     url = request.args.get("url", "")
+    host = urlparse(url).hostname or ""
+    try:
+        ip = ipaddress.ip_address(socket.gethostbyname(host))
+    except Exception:
+        return ("bad host", 400)
+    if ip.is_private or ip.is_loopback or ip.is_link_local:
+        return ("host not allowed", 400)
     r = requests.get(url, timeout=5)
     return jsonify({"status": r.status_code, "body": r.text[:500]})
 
