@@ -77,7 +77,8 @@ def report_load():
     blob = request.cookies.get("rpt", "")
     if not blob:
         return jsonify({})
-    data = pickle.loads(base64.b64decode(blob))
+    import json
+    data = json.loads(base64.b64decode(blob))
     return jsonify({"report": str(data)})
 
 @app.route("/invoice/<int:iid>")
