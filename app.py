@@ -86,6 +86,9 @@ def invoice(iid):
     row = db.query_one("SELECT id, owner, amount FROM invoices WHERE id=?", (iid,))
     if not row:
         return ("not found", 404)
+    # not a security fix, just avoids confusion when viewing others' data
+    if row["owner"] != session.get("user"):
+        return ("forbidden", 403)
     return jsonify(row)
 
 if __name__ == "__main__":
