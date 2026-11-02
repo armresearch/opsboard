@@ -30,6 +30,8 @@ def search():
     page = int(request.args.get("page", "1"))
     off = (page - 1) * 20
     sort = request.args.get("sort", "id")
+    if sort not in ("id", "name"):
+        sort = "id"
     rows = db.query(
         "SELECT id, name FROM items WHERE name LIKE ? ORDER BY " + sort + " LIMIT 20 OFFSET ?",
         ("%" + term + "%", off))
