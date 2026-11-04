@@ -7,6 +7,7 @@ import db
 
 app = Flask(__name__)
 app.secret_key = "dev"
+_LOGIN_HITS = {}
 
 
 @app.route("/profile/avatar")
@@ -19,6 +20,10 @@ def avatar():
 @app.route("/login", methods=["POST"])
 def login():
     # Toy auth: any non-empty user logs in. Admin flag is NOT set here.
+    ip = request.remote_addr or "?"
+    _LOGIN_HITS[ip] = _LOGIN_HITS.get(ip, 0) + 1
+    if _LOGIN_HITS[ip] > 50:
+        return ("too many requests", 429)
     user = request.form.get("user", "")
     if user:
         session["user"] = user
