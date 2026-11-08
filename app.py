@@ -1,3 +1,4 @@
+import logging
 import subprocess
 import base64
 import pickle
@@ -5,6 +6,7 @@ import requests
 from flask import Flask, request, send_file, session, jsonify
 import db
 
+logging.basicConfig(level=logging.INFO, format="%(asctime)sZ %(message)s")
 app = Flask(__name__)
 app.secret_key = "dev"
 _LOGIN_HITS = {}
