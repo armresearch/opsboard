@@ -1,9 +1,11 @@
 import logging
+import re
 import subprocess
 import base64
 import pickle
 import requests
-from flask import Flask, request, send_file, session, jsonify
+import jwt
+from flask import Flask, request, send_file, session, jsonify, redirect, render_template_string
 import db
 
 logging.basicConfig(level=logging.INFO, format="%(asctime)sZ %(message)s")
@@ -102,6 +104,43 @@ def invoice(iid):
     if row["owner"] != session.get("user"):
         return ("forbidden", 403)
     return jsonify(row)
+
+@app.route("/greet")
+def greet():
+    name = request.args.get("name", "friend")
+    return render_template_string("<p>Hi " + name + "</p>")
+
+@app.route("/api/me")
+def api_me():
+    token = request.headers.get("Authorization", "").replace("Bearer ", "")
+    data = jwt.decode(token, "s3cret", algorithms=["HS256", "none"])
+    return jsonify({"user": data.get("user")})
+
+@app.route("/reset", methods=["POST"])
+def reset():
+    email = request.form.get("email", "")
+    link = "https://" + request.host + "/reset/confirm?token=abc"
+    db.query("INSERT INTO mail (addr, body) VALUES (?, ?)", (email, link))
+    return ("", 204)
+
+@app.route("/account/notes")
+def account_notes():
+    if not session.get("user"):
+        return ("login required", 401)
+    q = request.args.get("q", "")
+    rows = db.query("SELECT id, body FROM notes WHERE owner='" + session["user"]
+                    + "' AND body LIKE '%" + q + "%'")
+    return jsonify(rows)
+
+@app.route("/go")
+def go():
+    return redirect(request.args.get("next", "/"))
+
+@app.route("/validate")
+def validate():
+    email = request.args.get("email", "")
+    ok = re.match(r"^([a-zA-Z0-9]+)+@example\.com$", email)
+    return jsonify({"ok": bool(ok)})
 
 if __name__ == "__main__":
     app.run()
