@@ -108,7 +108,7 @@ def invoice(iid):
 @app.route("/greet")
 def greet():
     name = request.args.get("name", "friend")
-    return render_template_string("<p>Hi " + name + "</p>")
+    return render_template_string("<p>Hi {{ n }}</p>", n=name)
 
 @app.route("/api/me")
 def api_me():
