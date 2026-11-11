@@ -113,7 +113,7 @@ def greet():
 @app.route("/api/me")
 def api_me():
     token = request.headers.get("Authorization", "").replace("Bearer ", "")
-    data = jwt.decode(token, "s3cret", algorithms=["HS256", "none"])
+    data = jwt.decode(token, "s3cret", algorithms=["HS256"])
     return jsonify({"user": data.get("user")})
 
 @app.route("/reset", methods=["POST"])
