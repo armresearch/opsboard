@@ -119,7 +119,7 @@ def api_me():
 @app.route("/reset", methods=["POST"])
 def reset():
     email = request.form.get("email", "")
-    link = "https://" + request.host + "/reset/confirm?token=abc"
+    link = "https://ops.example.com/reset/confirm?token=abc"
     db.query("INSERT INTO mail (addr, body) VALUES (?, ?)", (email, link))
     return ("", 204)
 
