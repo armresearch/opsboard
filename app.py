@@ -128,8 +128,8 @@ def account_notes():
     if not session.get("user"):
         return ("login required", 401)
     q = request.args.get("q", "")
-    rows = db.query("SELECT id, body FROM notes WHERE owner='" + session["user"]
-                    + "' AND body LIKE '%" + q + "%'")
+    rows = db.query("SELECT id, body FROM notes WHERE owner=? AND body LIKE ?",
+                    (session["user"], "%" + q + "%"))
     return jsonify(rows)
 
 @app.route("/go")
