@@ -134,7 +134,10 @@ def account_notes():
 
 @app.route("/go")
 def go():
-    return redirect(request.args.get("next", "/"))
+    nxt = request.args.get("next", "/")
+    if not nxt.startswith("/"):
+        nxt = "/"
+    return redirect(nxt)
 
 @app.route("/validate")
 def validate():
