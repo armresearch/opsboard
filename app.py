@@ -142,7 +142,7 @@ def go():
 @app.route("/validate")
 def validate():
     email = request.args.get("email", "")
-    ok = re.match(r"^([a-zA-Z0-9]+)+@example\.com$", email)
+    ok = re.match(r"^[a-zA-Z0-9]+@example\.com$", email)
     return jsonify({"ok": bool(ok)})
 
 if __name__ == "__main__":
