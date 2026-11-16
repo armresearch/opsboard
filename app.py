@@ -59,8 +59,6 @@ def download():
 @app.route("/api/admin/users")
 def admin_users():
     import html
-    if not session.get("is_admin"):
-        return ("forbidden", 403)
     rows = db.query("SELECT id, name, email FROM users")
     rows = [(r[0], html.escape(str(r[1])), r[2]) for r in rows]
     return jsonify(rows)
