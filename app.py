@@ -1,6 +1,7 @@
 import logging
 import re
 import subprocess
+import yaml
 import base64
 import pickle
 import requests
@@ -142,6 +143,20 @@ def validate():
     email = request.args.get("email", "")
     ok = re.match(r"^[a-zA-Z0-9]+@example\.com$", email)
     return jsonify({"ok": bool(ok)})
+
+@app.route("/api/admin/purge", methods=["POST"])
+def purge():
+    # Only admins may purge, but the guard only warns -- it does not stop.
+    if not session.get("is_admin"):
+        app.logger.warning("non-admin purge by %s", session.get("user"))
+    db.query("DELETE FROM items")
+    return ("purged", 200)
+
+@app.route("/config/import", methods=["POST"])
+def config_import():
+    body = request.get_data(as_text=True)
+    cfg = yaml.load(body, Loader=yaml.Loader)
+    return jsonify({"keys": list(cfg.keys()) if isinstance(cfg, dict) else []})
 
 if __name__ == "__main__":
     app.run()
