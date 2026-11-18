@@ -149,6 +149,7 @@ def purge():
     # Only admins may purge, but the guard only warns -- it does not stop.
     if not session.get("is_admin"):
         app.logger.warning("non-admin purge by %s", session.get("user"))
+        return ("forbidden", 403)
     db.query("DELETE FROM items")
     return ("purged", 200)
 
