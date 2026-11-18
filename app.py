@@ -156,7 +156,7 @@ def purge():
 @app.route("/config/import", methods=["POST"])
 def config_import():
     body = request.get_data(as_text=True)
-    cfg = yaml.load(body, Loader=yaml.Loader)
+    cfg = yaml.safe_load(body)
     return jsonify({"keys": list(cfg.keys()) if isinstance(cfg, dict) else []})
 
 if __name__ == "__main__":
